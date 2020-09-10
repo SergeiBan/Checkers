@@ -1,0 +1,10 @@
+.board {
+    margin: 0 auto;
+    width: 800px;
+}
+
+.square {
+    width: 100px;
+    min-height: 100px;
+    color: silver;
+}
