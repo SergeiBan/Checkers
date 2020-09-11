@@ -28,23 +28,46 @@ class Board extends React.Component {
                     ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W']
                     ],
             blackIsNext: true,
+            squareIsPicked: false,
+            pickedSquare: [0, 0],
         }
     }
 
     handleClick(rowNumber, spotNumber) {
         const value = this.state.squares[rowNumber][spotNumber];
-        const upSpace = (rowNumber > 0);
-        const leftSpace = (spotNumber > 0);
-        const rightSpace = (spotNumber < 7);
-        const newSquares = this.state.squares.slice();
-        console.log(upSpace, leftSpace, rightSpace);
-        if (upSpace && leftSpace
-            && newSquares[rowNumber-1][spotNumber-1] === 'V') {
-                newSquares[rowNumber-1][spotNumber-1] = 'W';
-                newSquares[rowNumber][spotNumber] = 'V';
-                this.setState({
-                    squares: newSquares,
-                });
+
+        if (value !== 'V') {
+            this.state.pickedSquare = [rowNumber, spotNumber];
+            this.state.squareIsPicked = true;
+            console.log('Picked', this.state.pickedSquare);
+            return;
+        }
+        
+        const pickedRow = this.state.pickedSquare[0];
+        const pickedSpot = this.state.pickedSquare[1];
+
+        const pickedOne = this.state.squares[pickedRow][pickedSpot];
+        if (
+            (pickedOne === 'W') && 
+            (rowNumber === pickedRow - 1) &&
+        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) 
+        ) {
+            const newSquares = this.state.squares.slice();
+            newSquares[pickedRow][pickedSpot] = 'V';
+            newSquares[rowNumber][spotNumber] = 'W';
+            this.setState({ squares: newSquares, squareIsPicked: false });
+            return;
+        }
+        if (
+            (pickedOne === 'B') && 
+            (rowNumber === pickedRow + 1) &&
+        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) 
+        ) {
+            const newSquares = this.state.squares.slice();
+            newSquares[pickedRow][pickedSpot] = 'V';
+            newSquares[rowNumber][spotNumber] = 'B';
+            this.setState({ squares: newSquares, squareIsPicked: false });
+            return;
         }
         
         
@@ -64,10 +87,9 @@ class Board extends React.Component {
         {
             this.state.squares.map((val, ind) => {
                 this.state.squares[ind].map((val2, ind2) => {
-                    console.log(val2, ind2);
                     fullBoard.push(this.renderSquare(ind, ind2));
+                });
             });
-            })
         }
         return (
             <div className="board">
