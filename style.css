@@ -6,5 +6,15 @@
 .square {
     width: 100px;
     min-height: 100px;
-    color: silver;
+    /* color: silver; */
+}
+
+.white {
+    background-color: green;
+    color: white;
+}
+
+.black {
+    background: green;
+    color: black;
 }

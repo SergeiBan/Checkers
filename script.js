@@ -2,11 +2,16 @@ class Square extends React.Component {
     constructor(props){
         super(props);
     }
-
+    
     render() {
-
+        const classes = {
+            'W': 'white',
+            'B': 'black',
+            'V': 'void',
+        }
+        let className = 'square ' + classes[this.props.content];
         return (
-            <button className="square" onClick={this.props.onClick}>
+            <button className={className} onClick={this.props.onClick}>
                 {this.props.content}
             </button>
         );
@@ -18,14 +23,14 @@ class Board extends React.Component {
         super(props);
         this.state = {
             squares: [
-                    ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'], 
-                    ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
+                    ['V', 'B', 'V', 'B', 'V', 'B', 'V', 'B'], 
+                    ['B', 'V', 'B', 'V', 'B', 'V', 'B', 'V'],
+                    ['V', 'B', 'V', 'B', 'V', 'B', 'V', 'B'], 
                     ['V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'], 
                     ['V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'], 
-                    ['V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'], 
-                    ['V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'], 
-                    ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
-                    ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W']
+                    ['W', 'V', 'W', 'V', 'W', 'V', 'W', 'V'], 
+                    ['V', 'W', 'V', 'W', 'V', 'W', 'V', 'W'],
+                    ['W', 'V', 'W', 'V', 'W', 'V', 'W', 'V']
                     ],
             blackIsNext: true,
             squareIsPicked: false,
@@ -36,10 +41,10 @@ class Board extends React.Component {
     handleClick(rowNumber, spotNumber) {
         const value = this.state.squares[rowNumber][spotNumber];
 
-        if (value !== 'V') {
+        if ((value === 'W' && this.state.blackIsNext) ||
+            value === 'B' && !this.state.blackIsNext) {
             this.state.pickedSquare = [rowNumber, spotNumber];
             this.state.squareIsPicked = true;
-            console.log('Picked', this.state.pickedSquare);
             return;
         }
         
@@ -50,23 +55,28 @@ class Board extends React.Component {
         if (
             (pickedOne === 'W') && 
             (rowNumber === pickedRow - 1) &&
-        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) 
+        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) &&
+        (value === 'V')
         ) {
             const newSquares = this.state.squares.slice();
             newSquares[pickedRow][pickedSpot] = 'V';
             newSquares[rowNumber][spotNumber] = 'W';
-            this.setState({ squares: newSquares, squareIsPicked: false });
+            this.setState({ squares: newSquares, 
+                            blackIsNext: false, 
+                            squareIsPicked: false,
+                            });
             return;
         }
         if (
             (pickedOne === 'B') && 
             (rowNumber === pickedRow + 1) &&
-        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) 
+        ((spotNumber === pickedSpot - 1) || (spotNumber === pickedSpot + 1)) &&
+        (value === 'V')
         ) {
             const newSquares = this.state.squares.slice();
             newSquares[pickedRow][pickedSpot] = 'V';
             newSquares[rowNumber][spotNumber] = 'B';
-            this.setState({ squares: newSquares, squareIsPicked: false });
+            this.setState({ squares: newSquares, blackIsNext: true, squareIsPicked: false });
             return;
         }
         
